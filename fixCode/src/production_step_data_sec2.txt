@@ -1,0 +1,11 @@
+    update_step_data("CNCCutToLengthMachine", vibrationAlertTriggered),
+    update_step_data("PunchMachine", vibrationAlertTriggered),
+    update_step_data("SpotWeldingMachine", vibrationAlertTriggered),
+    update_step_data("PaintingAndSealingSeamsMachine", vibrationAlertTriggered),
+    update_step_data("MeasuringRobot", vibrationAlertTriggered),
+  ]);
+}
+
+/// Randomly assign initial value to each step
+function initialize_all_steps() {
+  return Promise.all([

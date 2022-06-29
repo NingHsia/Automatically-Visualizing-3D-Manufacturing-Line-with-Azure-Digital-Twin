@@ -1,0 +1,18 @@
+{
+  "@id": "dtmi:com:microsoft:iot:e2e:digital_factory:production_step_SpotWeldingMachine;1",
+  "@type": "Interface",
+  "displayName": "Factory Production Step: SpotWeldingMachine - Interface Model",
+  "extends": "dtmi:com:microsoft:iot:e2e:digital_factory:production_step;1",
+  "@context": "dtmi:dtdl:context;2",
+  "contents": [
+    {
+      "@type": [
+        "Property",
+        "Distance"
+      ],
+      "name": "Distance",
+      "schema": "double",
+      "unit": "millimetre"
+    }
+  ]
+}

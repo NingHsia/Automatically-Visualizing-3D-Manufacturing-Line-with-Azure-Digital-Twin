@@ -1,0 +1,10 @@
+const fetch = require('node-fetch');
+const msal = require('../server/msal');
+const adtConfig = require('../adt.config');
+
+const ADT_URL = 'https://' + adtConfig.hostname + '/';
+
+/// For randomly updating data on a schedule
+/// Updading Fanning, Grinding, and Molding
+function random_update_data(vibrationAlertTriggered) {
+  return Promise.all([

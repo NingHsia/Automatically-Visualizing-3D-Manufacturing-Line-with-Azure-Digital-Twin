@@ -1,0 +1,8 @@
+factory: Fab14
+floor: floor1
+line: line2
+machineName: LaserWeldingRobot
+property1: temperature
+dataType1: double
+property2: distance
+dataType2: double

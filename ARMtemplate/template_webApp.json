@@ -1,0 +1,116 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "subscriptionId": {
+            "type": "string"
+        },
+        "webAppName": {
+            "type": "string"
+        },
+        "webAppLocation": {
+            "type": "string"
+        },
+        "webAppHostingPlanName": {
+            "type": "string"
+        },
+        "webAppServerFarmResourceGroup": {
+            "type": "string"
+        },
+        "webAppAlwaysOn": {
+            "type": "bool"
+        },
+        "webAppCurrentStack": {
+            "type": "string"
+        },
+        "webAppPhpVersion": {
+            "type": "string"
+        },
+        "webAppNodeVersion": {
+            "type": "string"
+        },
+        "webAppSku": {
+            "type": "string"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Web/serverfarms",
+            "apiVersion": "2021-03-01",
+            "name": "[parameters('webAppHostingPlanName')]",
+            "location": "[parameters('webAppLocation')]",
+            "sku": {
+                "name": "[parameters('webAppSku')]"
+            }
+        },
+        {
+            "apiVersion": "2018-11-01",
+            "name": "[parameters('webAppName')]",
+            "type": "Microsoft.Web/sites",
+            "location": "[parameters('webAppLocation')]",
+            "tags": null,
+            "dependsOn": [
+                "[concat('microsoft.insights/components/', parameters('webAppName'))]"
+            ],
+            "properties": {
+                "name": "[parameters('webAppName')]",
+                "siteConfig": {
+                    "appSettings": [
+                        {
+                            "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+                            "value": "[reference(concat('microsoft.insights/components/', parameters('webAppName')), '2015-05-01').InstrumentationKey]"
+                        },
+                        {
+                            "name": "APPLICATIONINSIGHTS_CONNECTION_STRING",
+                            "value": "[reference(concat('microsoft.insights/components/', parameters('webAppName')), '2015-05-01').ConnectionString]"
+                        },
+                        {
+                            "name": "ApplicationInsightsAgent_EXTENSION_VERSION",
+                            "value": "~2"
+                        },
+                        {
+                            "name": "XDT_MicrosoftApplicationInsights_Mode",
+                            "value": "default"
+                        },
+                        {
+                            "name": "XDT_MicrosoftApplicationInsights_NodeJS",
+                            "value": "1"
+                        },
+                        {
+                            "name": "WEBSITE_NODE_DEFAULT_VERSION",
+                            "value": "[parameters('webAppNodeVersion')]"
+                        }
+                    ],
+                    "metadata": [
+                        {
+                            "name": "CURRENT_STACK",
+                            "value": "[parameters('webAppCurrentStack')]"
+                        }
+                    ],
+                    "phpVersion": "[parameters('webAppPhpVersion')]",
+                    "nodeVersion": "[parameters('webAppNodeVersion')]",
+                    "alwaysOn": "[parameters('webAppAlwaysOn')]"
+                },
+                "serverFarmId": "[concat('/subscriptions/', parameters('subscriptionId'),'/resourcegroups/', parameters('webAppServerFarmResourceGroup'), '/providers/Microsoft.Web/serverfarms/', parameters('webAppHostingPlanName'))]",
+                "clientAffinityEnabled": true,
+                "virtualNetworkSubnetId": null
+            }
+        },
+        {
+            "apiVersion": "2020-02-02-preview",
+            "name": "[parameters('webAppName')]",
+            "type": "microsoft.insights/components",
+            "location": "eastasia",
+            "tags": null,
+            "dependsOn": [],
+            "properties": {
+                "ApplicationId": "[parameters('webAppName')]",
+                "Request_Source": "IbizaWebAppExtensionCreate",
+                "Flow_Type": "Redfield",
+                "Application_Type": "web",
+                "WorkspaceResourceId": "[concat('/subscriptions/', parameters('subscriptionId'), '/resourcegroups/defaultresourcegroup-sea/providers/microsoft.operationalinsights/workspaces/defaultworkspace-', parameters('subscriptionId'), '-sea')]"
+            }
+        }
+    ]
+}

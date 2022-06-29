@@ -1,0 +1,27 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "dtName": {
+            "type": "string"
+        },
+        "dtLocation": {
+            "type": "string"
+        },
+        "dtTags": {
+            "type": "object"
+        }
+    },
+    "resources": [
+        {
+            "apiVersion": "2021-06-30-preview",
+            "name": "[parameters('dtName')]",
+            "location": "[parameters('dtLocation')]",
+            "tags": "[parameters('dtTags')]",
+            "type": "Microsoft.DigitalTwins/digitalTwinsInstances",
+            "sku": {
+                "name": "S1"
+            }
+        }
+    ]
+}

@@ -1,0 +1,62 @@
+    initialize_step_data("CNCCutToLengthMachine"),
+    initialize_step_data("PunchMachine"),
+    initialize_step_data("SpotWeldingMachine"),
+    initialize_step_data("PaintingAndSealingSeamsMachine"),
+    initialize_step_data("MeasuringRobot"),
+  ]);
+}
+
+async function update_step_data(deviceType, vibrationAlertTriggered) {
+  let token = await msal.getToken();
+
+  const url = ADT_URL + 'digitaltwins/' + deviceType + '?api-version=2020-10-31';
+  const data = generate_data(deviceType, vibrationAlertTriggered);
+  var mapped_data = [];
+  for (const [key, value] of Object.entries(data)) {
+    mapped_data.push({
+      op: "replace",
+      path: "/" + key,
+      value: value
+    });
+  }
+
+  return await fetch(url, {
+    method: 'PATCH', headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + token
+    },
+    body: JSON.stringify(mapped_data)
+  });
+
+}
+
+// deviceType: "grinding", "fanning", "conching", "winnowing", or "molding"
+async function initialize_step_data(deviceType) {
+  let token = await msal.getToken();
+
+  const url = ADT_URL + 'digitaltwins/' + deviceType + '?api-version=2020-10-31';
+  const data = generate_data(deviceType, false);
+  var mapped_data = [];
+  for (const [key, value] of Object.entries(data)) {
+    mapped_data.push({
+      op: "add",
+      path: "/" + key,
+      value: value
+    });
+  }
+
+  return await fetch(url, {
+    method: 'PATCH', headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + token
+    },
+    body: JSON.stringify(mapped_data)
+  });
+
+}
+
+// Generating message for "grinding", "fanning", or "molding"
+// Return a string
+function generate_data(deviceType, vibrationAlertTriggered) {
+  var data = {};
+  switch (deviceType) {

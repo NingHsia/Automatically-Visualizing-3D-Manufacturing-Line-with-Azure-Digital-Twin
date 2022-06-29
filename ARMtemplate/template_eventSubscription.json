@@ -1,0 +1,56 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "name": {
+            "type": "string"
+        },
+        "iotHubName": {
+            "type": "string"
+        },
+        "iotHubResourceGroupName": {
+            "type": "string"
+        },
+        "subscriptionId": {
+            "type": "string"
+        },
+        "functionAppName": {
+            "type": "string"
+        },
+        "functionAppResourceGroupName": {
+            "type": "string"
+        },
+        "functionName": {
+            "type": "string"
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Devices/IotHubs/providers/eventSubscriptions",
+            "apiVersion": "2021-12-01",
+            "name": "[concat(parameters('iotHubName'), '/Microsoft.EventGrid/', parameters('name'))]",
+	          "properties": {
+		          "topic": "[concat('/subscriptions/', parameters('subscriptionId'), '/resourceGroups/', parameters('iotHubResourceGroupName'), '/providers/Microsoft.Devices/IotHubs/', parameters('iotHubName'))]",
+		          "destination": {
+			          "endpointType": "AzureFunction",
+			          "properties": {
+				          "resourceId": "[concat('/subscriptions/', parameters('subscriptionId'), '/resourceGroups/', parameters('functionAppResourceGroupName'), '/providers/Microsoft.Web/sites/', parameters('functionAppName'), '/functions/', parameters('functionName'))]",
+				          "maxEventsPerBatch": 1,
+				          "preferredBatchSizeInKilobytes": 64
+			          }
+		          },
+		          "filter": {
+			          "includedEventTypes": [
+				          "Microsoft.Devices.DeviceConnected",
+				          "Microsoft.Devices.DeviceDisconnected",
+				          "Microsoft.Devices.DeviceTelemetry"
+			          ],
+			          "advancedFilters": [],
+			          "enableAdvancedFilteringOnArrays": true
+		          },
+		          "labels": [],
+		          "eventDeliverySchema": "EventGridSchema"
+	          }
+        }
+    ]
+}

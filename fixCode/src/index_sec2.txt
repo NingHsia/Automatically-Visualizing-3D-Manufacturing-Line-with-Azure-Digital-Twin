@@ -1,0 +1,16 @@
+    const credential = new DefaultAzureCredential();
+    const serviceClient = new DigitalTwinsClient(url, credential);
+
+    var patch = []
+    data.forEach(element => {  
+        patch.push({
+            "op": "add",
+            "path": "/" + element.DisplayName,
+            "value": parseFloat(element.Value)
+        })
+    });
+
+    context.log('patch: ' + JSON.stringify(patch))
+    const updatedTwin = await serviceClient.updateDigitalTwin(digitalTwinId, patch);
+    context.log(updatedTwin)
+};
